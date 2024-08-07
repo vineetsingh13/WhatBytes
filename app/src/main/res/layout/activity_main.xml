@@ -39,18 +39,21 @@
         android:textColor="@android:color/black" />
 
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progressBar"
-        android:layout_width="80dp"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:indeterminate="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
         android:progress="0"
-        android:max="100"
+        app:indicatorColor="@color/blue"
+        app:trackThickness="8dp"
+        app:trackColor="#E5EDFA"
         app:layout_constraintTop_toBottomOf="@id/tvProgress"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDeleteContacts"
@@ -67,7 +70,7 @@
         app:flow_horizontalAlign="center"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvProgress"/>
+        app:layout_constraintTop_toBottomOf="@id/progressBar"/>
 
     <TextView
         android:id="@+id/deleteText"
