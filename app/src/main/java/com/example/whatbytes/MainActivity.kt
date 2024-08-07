@@ -1,12 +1,18 @@
 package com.example.whatbytes
 
+import android.Manifest
+import android.app.AlertDialog
 import android.content.ContentProviderOperation
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -25,6 +31,9 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val PERMISSION_REQ_CODE=100
+
+    var permissionExplainationDialogShown=false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,22 +43,9 @@ class MainActivity : AppCompatActivity() {
         
 
         val db = Firebase.firestore
-//        val contact= hashMapOf(
-//            "name" to "John Doe",
-//            "phone" to "1234567890",
-//        )
-//
-//        db.collection("contacts")
-//            .add(contact)
-//            .addOnSuccessListener { doc->
-//                Log.d(TAG, "DocumentSnapshot added with ID: ${doc.id}")
-//            }
-//            .addOnFailureListener { e->
-//                Log.w(TAG, "Error adding document", e)
-//            }
+
 
         binding.btnSyncContacts.setOnClickListener {
-            val currentDate = SimpleDateFormat("dd-MMMM-yyyy", Locale.getDefault()).format(Date())
 
             val calendar = Calendar.getInstance()
 
@@ -95,6 +91,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        requestPermission()
+    }
+
+
     fun saveContact(context: Context, name: String, phone: String) {
         val ops = ArrayList<ContentProviderOperation>()
 
@@ -131,5 +133,75 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
             Log.e("Contacts", "Error adding contact: $name", e)
         }
+    }
+
+    private fun requestPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_CONTACTS
+            ) == PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this, "Permission granted", Toast.LENGTH_LONG).show()
+
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_CONTACTS),
+                PERMISSION_REQ_CODE
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == PERMISSION_REQ_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permission granted", Toast.LENGTH_LONG).show()
+            } else if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) && permissionExplainationDialogShown
+            ) {
+                showSettingsRedirectDialog()
+            } else {
+                if(!permissionExplainationDialogShown){
+                    showPermissionExplanationDialog()
+                    permissionExplainationDialogShown=true
+                }
+            }
+        }
+    }
+
+    private fun showPermissionExplanationDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Location Permission is needed for the app.")
+        builder.setCancelable(false)
+        builder.setPositiveButton("OK") { dialog, which ->
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSION_REQ_CODE
+            )
+        }
+
+        val alertDialog = builder.create()
+
+        alertDialog.show()
+    }
+
+    private fun showSettingsRedirectDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Contacts permission is needed in order for the app to work")
+        builder.setCancelable(false)
+        builder.setPositiveButton("OK") { dialog, which ->
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.data = Uri.parse("package:$packageName")
+            startActivity(intent)
+        }
+        val alertDialog = builder.create()
+        alertDialog.show()
     }
 }
