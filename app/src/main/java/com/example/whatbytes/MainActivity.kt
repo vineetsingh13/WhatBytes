@@ -75,8 +75,6 @@ class MainActivity : AppCompatActivity() {
                 if(it.size<=10){
                     delay=500L
                 }else if(it.size<=100){
-                    delay=100L
-                }else{
                     delay=10L
                 }
                 // Launch a coroutine on the Main (UI) thread
