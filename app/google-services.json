@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1007370114508",
+    "project_id": "whatbytesassignment",
+    "storage_bucket": "whatbytesassignment.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1007370114508:android:ccc346e88cd518dbfdb969",
+        "android_client_info": {
+          "package_name": "com.example.whatbytes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAN-1aSkW9xisVigo1LvVaCOfBOYckiqJI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
